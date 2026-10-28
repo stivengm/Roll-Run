@@ -1,0 +1,320 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-top: 8px;
+}
+
+// Fondo mesh a pantalla completa, por detrás del contenido.
+.mesh {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(at 40% 20%, rgba(122, 247, 255, 0.16) 0, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(255, 215, 0, 0.16) 0, transparent 50%),
+    radial-gradient(at 0% 55%, rgba(255, 0, 40, 0.1) 0, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(124, 60, 255, 0.14) 0, transparent 50%);
+}
+
+// Entrada escalonada de los bloques.
+.d1 {
+  animation-delay: 0.12s;
+}
+.d2 {
+  animation-delay: 0.24s;
+}
+.d3 {
+  animation-delay: 0.36s;
+}
+
+.section-title {
+  margin-bottom: 10px;
+  color: var(--rr-on-surface-variant);
+}
+
+// ------------------------------------------------------------------ Trofeo y título
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.trophy {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 180px;
+  height: 172px;
+}
+
+.rays {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 215, 0, 0.24) 0 10deg, transparent 10deg 30deg);
+  mask: radial-gradient(closest-side, #000 50%, transparent);
+  animation: spin 18s linear infinite;
+}
+
+.cup {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 140px;
+  height: 140px;
+  border: 3px solid rgba(255, 215, 0, 0.75);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.28), transparent 45%),
+    radial-gradient(circle at 50% 60%, #34345a, #14142a 75%);
+  box-shadow:
+    inset 0 3px 6px rgba(255, 255, 255, 0.18),
+    inset 0 -8px 18px rgba(0, 0, 0, 0.45),
+    0 12px 28px rgba(0, 0, 0, 0.5);
+  animation:
+    rr-glow-pulse 2s ease-in-out infinite,
+    rr-float 3.2s ease-in-out infinite;
+
+  .icon {
+    font-size: 88px;
+    color: var(--rr-yellow);
+    text-shadow: 0 3px 0 var(--rr-yellow-deep);
+  }
+}
+
+.title {
+  font-size: 48px;
+  line-height: 52px;
+  text-transform: uppercase;
+
+  &.long {
+    font-size: clamp(30px, 9vw, 40px);
+    line-height: 1.1;
+  }
+}
+
+.subtitle {
+  font-size: 15px;
+}
+
+// ------------------------------------------------------------------ Ganador
+
+.winner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 22px 20px;
+  background: rgba(30, 30, 50, 0.9);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 2px 15px rgba(255, 255, 255, 0.05);
+  text-align: center;
+}
+
+.winner-avatar {
+  position: relative;
+  margin: 8px 0 4px;
+}
+
+.medal {
+  position: absolute;
+  right: -10px;
+  bottom: -8px;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #fff6df;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffe16d, #ffd700 50%, #e5b300);
+  box-shadow:
+    0 3px 0 var(--rr-yellow-deep),
+    0 0 14px rgba(255, 215, 0, 0.6);
+  font-family: var(--rr-font-display);
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--rr-on-yellow);
+}
+
+.winner-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 36px;
+  overflow-wrap: anywhere;
+}
+
+.final {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--rr-radius);
+  background: rgba(26, 26, 46, 0.8);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--rr-cyan);
+  }
+}
+
+.final-value {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--rr-font-display);
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 48px;
+  color: var(--rr-yellow);
+  text-shadow: var(--rr-glow-yellow);
+
+  .icon {
+    font-size: 30px;
+    text-shadow: none;
+  }
+}
+
+.mini-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+  margin: 4px 0 0;
+
+  div {
+    padding: 8px 4px;
+    border-radius: var(--rr-radius);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  dt {
+    font-family: var(--rr-font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--rr-muted);
+  }
+
+  dd {
+    margin: 0;
+    font-family: var(--rr-font-display);
+    font-size: 20px;
+    font-weight: 800;
+  }
+}
+
+// ------------------------------------------------------------------ Clasificación final
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 10px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--rr-radius-md);
+  background: var(--rr-surface-high);
+
+  &.is-me {
+    border-color: rgba(0, 241, 254, 0.45);
+  }
+
+  .chip {
+    padding: 0 6px;
+    font-size: 10px;
+  }
+}
+
+.place {
+  width: 28px;
+  font-family: var(--rr-font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--rr-on-surface-variant);
+}
+
+.name {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--rr-font-display);
+  font-size: 16px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pts {
+  margin-left: auto;
+  font-family: var(--rr-font-display);
+  font-size: 20px;
+  font-weight: 800;
+
+  small {
+    font-size: 12px;
+    color: var(--rr-muted);
+  }
+}
+
+.empty {
+  padding: 4px 2px;
+}
+
+// ------------------------------------------------------------------ Acciones
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.waiting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px dashed rgba(0, 241, 254, 0.4);
+  border-radius: var(--rr-radius-lg);
+  background: rgba(0, 241, 254, 0.06);
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  color: var(--rr-cyan-light);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

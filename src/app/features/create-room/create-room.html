@@ -1,0 +1,50 @@
+<main class="page create">
+  <app-top-bar backTo="/" />
+
+  <header class="intro anim-fade-up">
+    <h1 class="headline">Configurar sala</h1>
+    <p class="text-muted">Define las reglas de la próxima carrera.</p>
+  </header>
+
+  <app-player-chip class="anim-fade-up">
+    <a class="btn btn-ghost btn-sm change" routerLink="/">Cambiar</a>
+  </app-player-chip>
+
+  @if (currentRoom(); as code) {
+    <p class="notice text-sm">
+      <span class="icon" aria-hidden="true">info</span>
+      <span>
+        Ya estás en la sala <strong>{{ formatRoomCode(code) }}</strong
+        >: si creas otra saldrás de ella.
+        <a [routerLink]="['/sala', code]">Volver a esa sala</a>
+      </span>
+    </p>
+  }
+
+  <form class="form" aria-label="Reglas de la sala" (submit)="$event.preventDefault(); create()">
+    <app-settings-form [(settings)]="settings" [disabled]="creating()" />
+
+    <div class="dock">
+      @if (offline()) {
+        <p class="offline text-sm" role="status">
+          <span class="icon" aria-hidden="true">wifi_off</span>
+          Sin conexión con el servidor. Reintentando…
+        </p>
+      }
+      <button
+        type="submit"
+        class="btn btn-primary btn-lg btn-block"
+        [disabled]="creating() || !online()"
+        [attr.aria-busy]="creating()"
+      >
+        @if (creating()) {
+          <span class="icon spin" aria-hidden="true">progress_activity</span>
+          Creando…
+        } @else {
+          Crear sala
+          <span class="icon filled" aria-hidden="true">rocket_launch</span>
+        }
+      </button>
+    </div>
+  </form>
+</main>

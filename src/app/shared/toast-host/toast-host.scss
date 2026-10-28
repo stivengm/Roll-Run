@@ -1,0 +1,130 @@
+:host {
+  position: fixed;
+  top: calc(76px + env(safe-area-inset-top));
+  left: 50%;
+  z-index: 1000;
+  width: min(calc(100% - 2 * var(--rr-gutter)), calc(var(--rr-page-max) - 2 * var(--rr-gutter)));
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast {
+  --tone: var(--rr-cyan);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 6px 10px 14px;
+  overflow: hidden;
+  border-radius: var(--rr-radius-lg);
+  border: 1px solid color-mix(in srgb, var(--tone) 45%, transparent);
+  background: rgba(22, 22, 44, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.45),
+    0 0 18px color-mix(in srgb, var(--tone) 18%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  pointer-events: auto;
+
+  // Acento lateral del color del tipo
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 4px;
+    background: var(--tone);
+    box-shadow: 0 0 10px var(--tone);
+  }
+
+  &[data-kind='success'] {
+    --tone: var(--rr-green);
+  }
+
+  &[data-kind='warning'] {
+    --tone: var(--rr-orange);
+  }
+
+  &[data-kind='error'] {
+    --tone: var(--rr-red);
+  }
+}
+
+.badge {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--rr-radius-md);
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 15%, transparent);
+
+  .icon {
+    font-size: 22px;
+  }
+}
+
+.text {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  color: var(--rr-on-surface);
+  overflow-wrap: anywhere;
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--rr-radius-md);
+  background: transparent;
+  color: var(--rr-muted);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+
+  &:hover {
+    color: var(--rr-on-surface);
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .icon {
+    font-size: 20px;
+  }
+}
+
+.toast-in {
+  animation: toast-in 0.38s var(--rr-ease-bounce) both;
+}
+
+.toast-out {
+  animation: toast-out 0.2s ease-in both;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.96);
+  }
+}
+
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+}

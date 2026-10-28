@@ -1,0 +1,117 @@
+<app-confetti />
+<div class="mesh" aria-hidden="true"></div>
+
+@if (room(); as r) {
+  @let w = winner();
+
+  <section class="hero anim-pop-in">
+    <div class="trophy" aria-hidden="true">
+      <span class="rays"></span>
+      <span class="cup"><span class="icon filled">emoji_events</span></span>
+    </div>
+    <h1 class="brand-title title" [class.long]="!iWon()">
+      {{ iWon() ? '¡Victoria!' : '¡Tenemos un ganador!' }}
+    </h1>
+    <p class="subtitle text-muted">
+      @if (iWon()) {
+        ¡Llegaste primero a la meta de {{ settings().targetScore }} pts!
+      } @else if (myPlace(); as place) {
+        Quedaste en el puesto {{ place }}° · Partida #{{ r.round }}
+      } @else {
+        Partida #{{ r.round }} · Meta {{ settings().targetScore }} pts
+      }
+    </p>
+  </section>
+
+  @if (w) {
+    <section class="winner card-glass anim-pop-in d1" aria-labelledby="winner-name">
+      <p class="label-caps text-cyan">Ganador</p>
+      <div class="winner-avatar">
+        <app-avatar [avatar]="w.avatar" [size]="96" ring="yellow" [label]="w.name" />
+        <span class="medal" aria-hidden="true">1°</span>
+      </div>
+      <h2 class="winner-name" id="winner-name">
+        {{ w.name }}
+        @if (iWon()) {
+          <span class="chip chip-cyan">Tú</span>
+        }
+      </h2>
+
+      <div class="final">
+        <span class="label-caps text-muted">Puntaje final</span>
+        <span class="final-value">
+          <span class="icon filled" aria-hidden="true">stars</span>{{ w.score }}
+        </span>
+      </div>
+
+      @if (winnerStats(); as st) {
+        <dl class="mini-stats">
+          <div>
+            <dt>Lanzamientos</dt>
+            <dd>{{ st.rolls }}</dd>
+          </div>
+          <div>
+            <dt>Mejor turno</dt>
+            <dd>+{{ st.bestTurn }}</dd>
+          </div>
+          <div>
+            <dt>Penitencias</dt>
+            <dd>{{ st.penalties }}</dd>
+          </div>
+        </dl>
+      }
+    </section>
+  }
+
+  <section class="standings anim-pop-in d2" aria-labelledby="standings-title">
+    <h3 class="label-caps section-title" id="standings-title">Clasificación final</h3>
+    <ol class="list">
+      @for (row of others(); track row.player.id) {
+        @let p = row.player;
+        <li class="item" [class.is-me]="p.id === myId()">
+          <span class="place">{{ row.place }}°</span>
+          <app-avatar
+            [avatar]="p.avatar"
+            [size]="40"
+            [online]="p.connected"
+            [dimmed]="!p.connected"
+            [label]="p.name"
+          />
+          <span class="name">{{ p.name }}</span>
+          @if (p.id === myId()) {
+            <span class="chip chip-cyan">Tú</span>
+          }
+          <span class="pts">{{ p.score }} <small>pts</small></span>
+        </li>
+      } @empty {
+        <li class="empty text-sm text-muted">No quedan más jugadores en la sala.</li>
+      }
+    </ol>
+  </section>
+
+  <section class="actions anim-pop-in d3">
+    @if (store.isHost()) {
+      <button
+        type="button"
+        class="btn btn-primary btn-lg btn-block"
+        [disabled]="store.busy() || !store.online()"
+        (click)="restart()"
+      >
+        <span class="icon filled" aria-hidden="true">replay</span>Jugar de nuevo
+      </button>
+    } @else {
+      <p class="waiting" role="status">
+        <span class="status-dot cyan" aria-hidden="true"></span>
+        Esperando a que {{ store.host()?.name ?? 'el anfitrión' }} inicie la revancha…
+      </p>
+    }
+    <button
+      type="button"
+      class="btn btn-secondary btn-block"
+      [disabled]="leaving()"
+      (click)="exit()"
+    >
+      <span class="icon" aria-hidden="true">home</span>Salir al inicio
+    </button>
+  </section>
+}

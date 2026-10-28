@@ -1,0 +1,121 @@
+<main class="page home">
+  <header class="status-row">
+    <span class="chip chip-pill status" role="status">
+      <span
+        class="status-dot"
+        aria-hidden="true"
+        [class.cyan]="status() === 'connecting'"
+        [class.offline]="status() === 'offline'"
+      ></span>
+      {{ statusLabel() }}
+    </span>
+    <span class="chip chip-pill version">v{{ version }} Arcade</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero-tile anim-float" aria-hidden="true">
+      <div class="tile-frame">
+        <div class="tile-face"><span class="icon filled">casino</span></div>
+      </div>
+      <span class="tile-badge">Dados 3D</span>
+    </div>
+    <h1 class="brand-title logo anim-pop-in">ROLL&amp;RUN</h1>
+    <p class="tagline">El dado decide tu destino</p>
+  </section>
+
+  @if (sessionCode(); as code) {
+    <section class="resume" [class.is-turn]="myTurn()" aria-labelledby="home-resume-title">
+      <span class="resume-icon" aria-hidden="true">
+        <span class="icon filled">sports_esports</span>
+      </span>
+      <p class="resume-text">
+        <strong id="home-resume-title">{{
+          myTurn() ? '¡Es tu turno! Te están esperando' : 'Tienes una partida en curso'
+        }}</strong>
+        <span class="label-caps">Sala {{ formatRoomCode(code) }}</span>
+      </p>
+      <button type="button" class="btn btn-cyan btn-sm" (click)="resume(code)">Volver</button>
+    </section>
+  }
+
+  <app-profile-card class="anim-fade-up" />
+
+  <nav class="actions anim-fade-up" aria-label="Jugar">
+    <button
+      type="button"
+      class="action host"
+      aria-labelledby="home-create-title"
+      aria-describedby="home-create-desc"
+      (click)="go('/crear')"
+    >
+      <span class="action-tile" aria-hidden="true">
+        <span class="icon filled">add_circle</span>
+      </span>
+      <span class="action-body">
+        <span class="action-title">
+          <span id="home-create-title">Crear sala</span>
+          <span class="chip chip-yellow">Anfitrión</span>
+        </span>
+        <span class="action-desc" id="home-create-desc"
+          >Configura meta, reglas y lidera la carrera</span
+        >
+      </span>
+      <span class="action-arrow" aria-hidden="true">
+        <span class="icon">arrow_forward</span>
+      </span>
+    </button>
+
+    <button
+      type="button"
+      class="action join"
+      aria-labelledby="home-join-title"
+      aria-describedby="home-join-desc"
+      (click)="go('/unirse')"
+    >
+      <span class="action-tile" aria-hidden="true">
+        <span class="icon filled">key</span>
+      </span>
+      <span class="action-body">
+        <span class="action-title">
+          <span id="home-join-title">Unirse a sala</span>
+          <span class="chip chip-cyan">Con código</span>
+        </span>
+        <span class="action-desc" id="home-join-desc">Ingresa el PIN de 6 dígitos de tu amigo</span>
+      </span>
+      <span class="action-arrow" aria-hidden="true">
+        <span class="icon">arrow_forward</span>
+      </span>
+    </button>
+  </nav>
+
+  <p class="tip">
+    <span class="icon filled" aria-hidden="true">tips_and_updates</span>
+    <span>
+      ¡Tira el dado para avanzar a la meta, pero <strong>si sacas la penitencia</strong> pierdes
+      tus puntos!
+    </span>
+  </p>
+
+  <footer class="footer">
+    <button type="button" class="btn btn-ghost btn-sm" (click)="rulesOpen.set(true)">
+      <span class="icon" aria-hidden="true">help</span>Cómo jugar
+    </button>
+    <button
+      type="button"
+      class="icon-btn round sound"
+      aria-label="Silenciar sonido"
+      [title]="sound.muted() ? 'Activar sonido' : 'Silenciar sonido'"
+      [attr.aria-pressed]="sound.muted()"
+      (click)="sound.toggle()"
+    >
+      <span class="icon" aria-hidden="true">{{ sound.muted() ? 'volume_off' : 'volume_up' }}</span>
+    </button>
+  </footer>
+</main>
+
+<app-rules-sheet
+  [open]="rulesOpen()"
+  [settings]="defaultSettings"
+  [defaults]="true"
+  (closed)="rulesOpen.set(false)"
+/>

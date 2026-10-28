@@ -1,0 +1,13 @@
+<div class="stack" role="status" aria-live="polite" aria-relevant="additions">
+  @for (t of toasts(); track t.id) {
+    <div class="toast" [attr.data-kind]="t.kind" animate.enter="toast-in" animate.leave="toast-out">
+      <span class="badge" aria-hidden="true">
+        <span class="icon filled">{{ t.icon }}</span>
+      </span>
+      <p class="text">{{ t.text }}</p>
+      <button type="button" class="close" aria-label="Cerrar aviso" (click)="dismiss(t.id)">
+        <span class="icon" aria-hidden="true">close</span>
+      </button>
+    </div>
+  }
+</div>

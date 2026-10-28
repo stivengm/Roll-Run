@@ -1,0 +1,415 @@
+.home {
+  gap: 20px;
+  padding-top: calc(16px + env(safe-area-inset-top));
+}
+
+// ------------------------------------------------------------ Estado y versión
+
+.status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.status,
+.version {
+  font-size: 11px;
+  background: rgba(30, 30, 50, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.status {
+  padding: 5px 12px;
+  color: var(--rr-on-surface);
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+.version {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+}
+
+// ------------------------------------------------------------ Héroe
+
+.hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
+  text-align: center;
+
+  // Halo amarillo detrás del logo
+  &::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    z-index: -1;
+    width: 320px;
+    height: 320px;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.16), transparent 65%);
+    pointer-events: none;
+  }
+}
+
+.hero-tile {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  margin-bottom: 14px;
+}
+
+.tile-frame {
+  width: 100%;
+  height: 100%;
+  padding: 2px;
+  border-radius: 22px;
+  background: linear-gradient(
+    135deg,
+    var(--rr-orange) 0%,
+    var(--rr-yellow) 60%,
+    var(--rr-yellow-light) 100%
+  );
+  box-shadow:
+    0 10px 30px rgba(255, 215, 0, 0.35),
+    0 0 36px rgba(255, 160, 0, 0.25);
+  transition: transform 0.3s var(--rr-ease-bounce);
+
+  &:hover {
+    transform: rotate(6deg);
+  }
+}
+
+.tile-face {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 20px;
+  background: radial-gradient(circle at 80% 15%, rgba(255, 215, 0, 0.22), transparent 40%), #17162c;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  .icon {
+    font-size: 50px;
+    color: var(--rr-yellow-light);
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.8));
+  }
+}
+
+.tile-badge {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: var(--rr-cyan);
+  color: #002b2e;
+  font-family: var(--rr-font-display);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 241, 254, 0.4);
+}
+
+.logo {
+  // El padding evita que la cursiva quede recortada por background-clip.
+  padding: 0 0.12em;
+  font-size: clamp(46px, 15vw, 60px);
+}
+
+.tagline {
+  margin-right: -0.25em;
+  font-family: var(--rr-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--rr-cyan-light);
+  text-shadow: 0 0 10px rgba(0, 241, 254, 0.45);
+}
+
+// ------------------------------------------------------------ Partida en curso
+
+.resume {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 14px;
+  border-radius: var(--rr-radius-lg);
+  border: 1px solid rgba(0, 241, 254, 0.55);
+  background: linear-gradient(115deg, rgba(0, 241, 254, 0.16), rgba(30, 30, 50, 0.92) 65%);
+  box-shadow:
+    var(--rr-glow-cyan),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: rr-pop-in 0.5s var(--rr-ease-bounce) both;
+
+  &.is-turn {
+    border-color: rgba(255, 215, 0, 0.7);
+    background: linear-gradient(115deg, rgba(255, 215, 0, 0.18), rgba(30, 30, 50, 0.92) 65%);
+    box-shadow:
+      var(--rr-glow-yellow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+}
+
+.resume-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--rr-radius-md);
+  background: rgba(0, 241, 254, 0.15);
+  color: var(--rr-cyan);
+
+  .icon {
+    animation: rr-pulse 2s ease-in-out infinite;
+  }
+}
+
+.resume-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+
+  strong {
+    font-family: var(--rr-font-display);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 20px;
+  }
+
+  .label-caps {
+    font-size: 11px;
+    color: var(--rr-cyan);
+  }
+}
+
+.resume .btn {
+  flex-shrink: 0;
+  min-height: 40px;
+  font-size: 13px;
+}
+
+// ------------------------------------------------------------ Tarjetas de acción
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.action {
+  --accent: var(--rr-yellow);
+  --accent-soft: rgba(255, 215, 0, 0.16);
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  overflow: hidden;
+  border: 2px solid var(--accent);
+  border-radius: var(--rr-radius-xl);
+  background: linear-gradient(90deg, rgba(40, 40, 61, 0.94), rgba(30, 30, 50, 0.94));
+  color: inherit;
+  text-align: left;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.2s ease;
+
+  // Destello de color en la esquina
+  &::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    filter: blur(26px);
+    transition: transform 0.3s ease;
+    pointer-events: none;
+  }
+
+  > * {
+    position: relative;
+  }
+
+  &:hover::before {
+    transform: scale(1.3);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.host {
+    border-color: rgba(255, 215, 0, 0.8);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.18);
+  }
+
+  &.join {
+    --accent: var(--rr-cyan);
+    --accent-soft: rgba(0, 241, 254, 0.15);
+    border-color: rgba(0, 241, 254, 0.7);
+    box-shadow: 0 6px 20px rgba(0, 241, 254, 0.15);
+  }
+}
+
+.action-tile {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--rr-yellow), #f59e0b);
+  color: var(--rr-on-yellow);
+  box-shadow:
+    0 4px 12px rgba(255, 215, 0, 0.4),
+    inset 0 2px 1px rgba(255, 255, 255, 0.5);
+  transition: transform 0.25s var(--rr-ease-bounce);
+
+  .icon {
+    font-size: 30px;
+  }
+
+  .join & {
+    background: linear-gradient(135deg, var(--rr-cyan), #0891b2);
+    color: #002b2e;
+    box-shadow:
+      0 4px 12px rgba(0, 241, 254, 0.4),
+      inset 0 2px 1px rgba(255, 255, 255, 0.5);
+  }
+
+  .host:hover & {
+    transform: rotate(6deg);
+  }
+
+  .join:hover & {
+    transform: rotate(-6deg);
+  }
+}
+
+.action-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.action-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  font-family: var(--rr-font-display);
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 24px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff6df;
+
+  .join & {
+    color: #ddfdff;
+  }
+
+  .chip {
+    padding: 2px 6px;
+    font-size: 10px;
+    line-height: 14px;
+    border-radius: var(--rr-radius-sm);
+  }
+}
+
+.action-desc {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--rr-on-surface-variant);
+}
+
+.action-arrow {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--rr-border-strong);
+  background: var(--rr-surface-highest);
+  color: var(--accent);
+  transition: transform 0.2s ease;
+
+  .icon {
+    font-size: 20px;
+  }
+
+  .action:hover & {
+    transform: translateX(3px);
+  }
+}
+
+// ------------------------------------------------------------ Consejo y pie
+
+.tip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--rr-radius-md);
+  border: 1px solid var(--rr-border);
+  background: rgba(26, 26, 46, 0.7);
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--rr-on-surface-variant);
+
+  > .icon {
+    font-size: 22px;
+    color: var(--rr-orange);
+  }
+
+  strong {
+    color: var(--rr-red-light);
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+
+  .btn-ghost {
+    padding: 0 14px;
+    font-size: 12px;
+  }
+}
+
+.sound {
+  width: 44px;
+  height: 44px;
+  color: var(--rr-on-surface-variant);
+
+  &[aria-pressed='false'] {
+    color: var(--rr-yellow);
+  }
+}

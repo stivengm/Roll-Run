@@ -1,0 +1,136 @@
+:host {
+  --av-size: 48px;
+  --av-color: #ffd700;
+  --av-ring: transparent;
+  --av-ring-glow: transparent;
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--av-size);
+  height: var(--av-size);
+  vertical-align: middle;
+}
+
+.tile {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 30%;
+  background:
+    radial-gradient(
+      120% 90% at 28% 12%,
+      color-mix(in srgb, var(--av-color) 50%, #fff) 0%,
+      transparent 55%
+    ),
+    linear-gradient(
+      160deg,
+      var(--av-color) 25%,
+      color-mix(in srgb, var(--av-color) 55%, #1a1030) 100%
+    );
+  box-shadow:
+    inset 0 2px 1px rgba(255, 255, 255, 0.55),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.28),
+    0 3px 8px rgba(0, 0, 0, 0.35);
+  transition:
+    filter 0.2s ease,
+    opacity 0.2s ease;
+
+  // Brillo especular interno (acabado de plástico pulido)
+  &::after {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 12%;
+    right: 12%;
+    height: 40%;
+    border-radius: 45% 45% 50% 50% / 60% 60% 40% 40%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0));
+    pointer-events: none;
+  }
+}
+
+.glyph {
+  font-size: calc(var(--av-size) * 0.52);
+  color: color-mix(in srgb, var(--av-color) 15%, #14122a);
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.35));
+}
+
+// Anillo exterior separado del tile por un hueco transparente
+:host(:not([data-ring='none']))::before {
+  --gap: max(2px, calc(var(--av-size) * 0.035));
+  --w: max(2px, calc(var(--av-size) * 0.045));
+  content: '';
+  position: absolute;
+  inset: calc(-1 * (var(--gap) + var(--w)));
+  border: var(--w) solid var(--av-ring);
+  border-radius: 32%;
+  box-shadow: 0 0 12px var(--av-ring-glow);
+  pointer-events: none;
+}
+
+:host([data-ring='yellow']) {
+  --av-ring: var(--rr-yellow);
+  --av-ring-glow: rgba(255, 215, 0, 0.45);
+}
+
+:host([data-ring='cyan']) {
+  --av-ring: var(--rr-cyan);
+  --av-ring-glow: rgba(0, 241, 254, 0.45);
+}
+
+:host([data-ring='red']) {
+  --av-ring: var(--rr-red);
+  --av-ring-glow: rgba(255, 90, 95, 0.5);
+}
+
+:host(.dimmed) .tile {
+  filter: grayscale(1) brightness(0.7);
+  opacity: 0.8;
+}
+
+.badge {
+  --b: max(16px, calc(var(--av-size) * 0.36));
+  position: absolute;
+  top: calc(var(--b) * -0.35);
+  right: calc(var(--b) * -0.35);
+  display: grid;
+  place-items: center;
+  width: var(--b);
+  height: var(--b);
+  border-radius: 50%;
+  color: var(--rr-on-yellow);
+  background: linear-gradient(
+    180deg,
+    var(--rr-yellow-light),
+    var(--rr-yellow) 60%,
+    var(--rr-yellow-dim)
+  );
+  box-shadow:
+    0 0 0 2px var(--rr-bg),
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    0 0 10px rgba(255, 215, 0, 0.5);
+
+  .icon {
+    font-size: calc(var(--b) * 0.68);
+  }
+}
+
+.dot {
+  --d: max(10px, calc(var(--av-size) * 0.26));
+  position: absolute;
+  right: calc(var(--d) * -0.25);
+  bottom: calc(var(--d) * -0.25);
+  width: var(--d);
+  height: var(--d);
+  border-radius: 50%;
+  border: 2px solid var(--rr-bg);
+  background: var(--rr-green);
+  box-shadow: 0 0 8px rgba(61, 220, 132, 0.8);
+
+  &.off {
+    background: var(--rr-muted);
+    box-shadow: none;
+  }
+}

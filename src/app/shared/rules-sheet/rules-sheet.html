@@ -1,0 +1,104 @@
+@let s = settings();
+@let generic = defaults();
+<app-sheet [open]="open()" title="Cómo jugar" icon="menu_book" (closed)="closed.emit()">
+  @if (generic) {
+    <p class="label-caps summary-label">Reglas por defecto</p>
+  }
+  <div class="summary">
+    <span class="chip chip-yellow-outline">
+      <span class="icon" aria-hidden="true">flag</span>Meta {{ s.targetScore }} pts
+    </span>
+    <span class="chip chip-red">
+      <span class="icon filled" aria-hidden="true">skull</span>Penitencia {{ s.penaltyNumber }}
+    </span>
+    <span class="chip chip-orange">{{ mode().title }}</span>
+  </div>
+
+  <ol class="steps">
+    <li class="step">
+      <span class="num" aria-hidden="true">1</span>
+      <div class="content">
+        <h3 class="step-title">Orden de llegada</h3>
+        <p class="text-sm text-muted">
+          Los turnos siguen el orden en que cada jugador entró al lobby.
+        </p>
+      </div>
+    </li>
+
+    <li class="step">
+      <span class="num" aria-hidden="true">2</span>
+      <div class="content">
+        <h3 class="step-title">Lanza y suma</h3>
+        <p class="text-sm text-muted">
+          En tu turno lanza el dado: cada número distinto
+          {{ generic ? 'del de penitencia' : 'del ' + s.penaltyNumber }} se suma a tu score al
+          instante.
+        </p>
+        <div class="mini-row" aria-hidden="true">
+          @for (n of faces; track n) {
+            <span class="mini-die" [class.bad]="n === s.penaltyNumber">{{ n }}</span>
+          }
+        </div>
+      </div>
+    </li>
+
+    <li class="step">
+      <span class="num" aria-hidden="true">3</span>
+      <div class="content">
+        <h3 class="step-title">Sigue o plántate</h3>
+        <p class="text-sm text-muted">
+          Puedes seguir lanzando para sumar más o plantarte para pasar el turno. Debes lanzar al
+          menos una vez antes de plantarte.
+        </p>
+      </div>
+    </li>
+
+    <li class="step danger">
+      <span class="num" aria-hidden="true">4</span>
+      <div class="content">
+        <h3 class="step-title">
+          {{ generic ? 'Cuidado con la penitencia' : 'Cuidado con el ' + s.penaltyNumber }}
+        </h3>
+        <p class="text-sm text-muted">{{ penaltyText() }}</p>
+      </div>
+    </li>
+
+    <li class="step goal">
+      <span class="num" aria-hidden="true">5</span>
+      <div class="content">
+        <h3 class="step-title">
+          {{ generic ? 'Llega a la meta' : 'Llega a ' + s.targetScore + ' pts' }}
+        </h3>
+        <p class="text-sm text-muted">
+          Gana quien llegue primero a
+          {{ generic ? 'la meta (por defecto, ' + s.targetScore + ' pts)' : s.targetScore + ' puntos' }},
+          en el mismo lanzamiento y sin necesidad de plantarse.
+        </p>
+      </div>
+    </li>
+  </ol>
+
+  @if (generic) {
+    <p class="note text-sm">
+      <span class="icon" aria-hidden="true">tune</span>
+      <span>
+        El anfitrión elige la meta, el número de penitencia y si se pierde todo o solo lo del
+        turno. Dentro de la sala verás las reglas exactas.
+      </span>
+    </p>
+  }
+
+  <p class="note text-sm">
+    <span class="icon" aria-hidden="true">wifi_off</span>
+    <span>
+      Si el jugador del turno se desconecta, su turno se salta automáticamente a los
+      {{ skipSeconds }} s.
+    </span>
+  </p>
+
+  <div sheetActions>
+    <button type="button" class="btn btn-primary btn-block" (click)="closed.emit()">
+      ¡Entendido!
+    </button>
+  </div>
+</app-sheet>

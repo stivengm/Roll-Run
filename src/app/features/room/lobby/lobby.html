@@ -1,0 +1,275 @@
+@let s = settings();
+@let isHost = store.isHost();
+@let busy = store.busy();
+@let online = store.online();
+@let hostId = store.room()?.hostId;
+
+<!-- Código de sala y reglas -->
+<section class="intro" aria-label="Sala">
+  <div class="card-glass glow-cyan code-card">
+    <div class="code-head">
+      <span class="label-caps code-label">
+        <span class="status-dot cyan" aria-hidden="true"></span>Código de sala
+      </span>
+      <span class="chip chip-pill private">
+        <span class="icon" aria-hidden="true">lock</span>Sala privada
+      </span>
+    </div>
+    <div class="code-row">
+      <p class="code neon-cyan">
+        @for (part of codeParts(); track $index) {
+          @if (!$first) {
+            <span class="sep" aria-hidden="true">·</span>
+          }
+          <span>{{ part }}</span>
+        }
+      </p>
+      <button
+        type="button"
+        class="mini-btn copy"
+        aria-label="Copiar código de sala"
+        (click)="copyCode()"
+      >
+        <span class="icon" aria-hidden="true">{{ copied() ? 'check' : 'content_copy' }}</span>
+        <span class="label-caps" aria-hidden="true">{{ copied() ? 'Copiado' : 'Copiar' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <ul class="stats" aria-label="Reglas de la partida">
+    <li class="card-glass stat goal">
+      <div class="stat-head">
+        <span class="icon filled text-yellow" aria-hidden="true">emoji_events</span>
+        <span class="label-caps stat-label">Objetivo</span>
+      </div>
+      <div>
+        <p class="stat-value text-yellow">{{ s.targetScore }} PTS</p>
+        <p class="stat-sub">Meta victoria</p>
+      </div>
+    </li>
+    <li class="card-glass stat danger">
+      <div class="stat-head">
+        <span class="icon filled" aria-hidden="true">skull</span>
+        <span class="label-caps stat-label">Peligro</span>
+      </div>
+      <div>
+        <p class="stat-value">DADO {{ s.penaltyNumber }}</p>
+        <p class="stat-sub">{{ s.penaltyMode === 'all' ? 'Pierde todo' : 'Solo el turno' }}</p>
+      </div>
+    </li>
+    <li class="card-glass stat slots">
+      <div class="stat-head">
+        <span class="icon filled text-cyan" aria-hidden="true">group</span>
+        <span class="label-caps stat-label">Cupos</span>
+      </div>
+      <div>
+        <p class="stat-value">
+          {{ count() }}/{{ s.maxPlayers }}<span class="sr-only"> jugadores</span>
+        </p>
+        <div class="progress cyan" aria-hidden="true">
+          <div class="progress-fill" [style.width.%]="fillPct()"></div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<!-- Jugadores -->
+<section class="roster-section" aria-labelledby="rr-lobby-players">
+  <header class="roster-head">
+    <h2 class="roster-title" id="rr-lobby-players">
+      <span class="icon" aria-hidden="true">sports_esports</span>Jugadores en sala
+    </h2>
+    <span class="chip chip-pill count" [class.full]="!hasSlot()">
+      {{ count() }}/{{ s.maxPlayers }}<span class="sr-only"> jugadores</span>
+    </span>
+    <span
+      class="chip chip-pill mood"
+      [class.chip-cyan]="!ready()"
+      [class.chip-yellow-outline]="ready()"
+      [class.waiting]="!ready()"
+      role="status"
+    >
+      @if (ready()) {
+        <span class="icon filled" aria-hidden="true">bolt</span>¡Listos para correr!
+      } @else {
+        <span class="ping" aria-hidden="true"></span>Esperando al resto…
+      }
+    </span>
+  </header>
+  <p class="order-note">
+    <span class="icon" aria-hidden="true">format_list_numbered</span>
+    El orden de turnos es el orden de llegada
+  </p>
+
+  <div class="card-glass roster">
+    <ol class="players">
+      @for (p of store.players(); track p.id; let i = $index) {
+        @let host = p.id === hostId;
+        @let mine = p.id === myId();
+        <li
+          class="player"
+          [class.is-host]="host"
+          [class.is-me]="mine"
+          [class.offline]="!p.connected"
+          animate.enter="player-in"
+          animate.leave="player-out"
+        >
+          <app-avatar
+            [avatar]="p.avatar"
+            [size]="48"
+            [ring]="host ? 'yellow' : mine ? 'cyan' : 'none'"
+            [host]="host"
+            [online]="p.connected"
+            [dimmed]="!p.connected"
+            [label]="p.name"
+          />
+          <div class="info">
+            <div class="name-row">
+              <h3 class="name" [attr.title]="p.name">{{ p.name }}</h3>
+              <span class="chip tag" aria-hidden="true">P{{ i + 1 }}</span>
+              @if (host) {
+                <span class="chip chip-yellow-outline tag">Anfitrión</span>
+              }
+              @if (mine) {
+                <span class="chip chip-cyan tag">Tú</span>
+              }
+            </div>
+            <p class="label-caps state" [class.off]="!p.connected">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="state-text">
+                @if (!p.connected) {
+                  Desconectado
+                } @else if (host) {
+                  Listo para la carrera
+                } @else {
+                  Listo
+                }
+              </span>
+            </p>
+          </div>
+          @if (isHost && !mine) {
+            <button
+              type="button"
+              class="icon-btn kick"
+              [attr.aria-label]="'Expulsar a ' + p.name"
+              aria-haspopup="dialog"
+              [disabled]="busy || !online"
+              (click)="askKick(p)"
+            >
+              <span class="icon" aria-hidden="true">person_remove</span>
+            </button>
+          }
+          <span class="order">
+            <span aria-hidden="true">#{{ i + 1 }}</span
+            ><span class="sr-only">Turno {{ i + 1 }}</span>
+          </span>
+        </li>
+      }
+    </ol>
+
+    @if (hasSlot()) {
+      <div class="slot">
+        <span class="slot-icon" aria-hidden="true"><span class="icon">person_add</span></span>
+        <div class="slot-text">
+          <p class="slot-title">Esperando jugador…</p>
+          <p class="slot-sub">Espacio {{ count() + 1 }} de {{ s.maxPlayers }} disponible</p>
+        </div>
+        <button type="button" class="mini-btn" aria-label="Invitar jugadores" (click)="share()">
+          <span class="icon" aria-hidden="true">send</span>
+          <span class="label-caps" aria-hidden="true">Invitar</span>
+        </button>
+      </div>
+    }
+  </div>
+
+  <p class="note" [class.waiting]="!isHost" aria-live="polite">
+    <span class="icon filled" aria-hidden="true">verified_user</span>
+    <span>
+      @if (!isHost) {
+        Esperando a que {{ hostName() }} inicie la partida…
+      } @else if (ready() && offlineNote()) {
+        {{ offlineNote() }}
+      } @else if (ready()) {
+        Eres el anfitrión de la sala. Puedes iniciar cuando estés listo.
+      } @else {
+        Necesitas al menos 2 jugadores conectados para iniciar.
+      }
+    </span>
+  </p>
+</section>
+
+<!-- Acciones -->
+<div class="actions">
+  @if (isHost) {
+    <button
+      type="button"
+      class="btn btn-primary btn-lg btn-block start"
+      [disabled]="!ready() || busy || !online"
+      (click)="start()"
+    >
+      Iniciar partida
+      <span class="icon filled" aria-hidden="true">sports_score</span>
+    </button>
+    <button
+      type="button"
+      class="btn btn-secondary btn-block"
+      aria-haspopup="dialog"
+      [disabled]="busy || !online"
+      (click)="openEdit()"
+    >
+      <span class="icon" aria-hidden="true">tune</span>
+      Editar reglas
+    </button>
+  }
+  <button type="button" class="btn btn-ghost btn-block share" (click)="share()">
+    <span class="icon" aria-hidden="true">share</span>
+    Compartir enlace de sala
+  </button>
+</div>
+
+<p class="sr-only" aria-live="polite">{{ announcement() }}</p>
+
+<!-- Editar reglas -->
+<app-sheet [open]="editOpen()" title="Editar reglas" icon="tune" (closed)="editOpen.set(false)">
+  <form [id]="formId" (submit)="save($event)">
+    <app-settings-form [(settings)]="draft" [minPlayers]="count()" [disabled]="busy" />
+  </form>
+  <div sheetActions>
+    <button
+      type="submit"
+      class="btn btn-primary btn-block"
+      [attr.form]="formId"
+      [disabled]="busy || !online"
+    >
+      <span class="icon filled" aria-hidden="true">save</span>
+      Guardar
+    </button>
+  </div>
+</app-sheet>
+
+<!-- Expulsar -->
+<app-sheet
+  [open]="kickOpen()"
+  [title]="'¿Expulsar a ' + (kickTarget()?.name ?? '') + '?'"
+  icon="person_remove"
+  (closed)="kickOpen.set(false)"
+>
+  <p class="text-muted">
+    Saldrá de la sala de inmediato. Podrá volver a entrar con el código si aún hay cupo.
+  </p>
+  <div sheetActions>
+    <button
+      type="button"
+      class="btn btn-danger btn-block"
+      [disabled]="busy || !online"
+      (click)="confirmKick()"
+    >
+      <span class="icon" aria-hidden="true">person_remove</span>
+      Expulsar
+    </button>
+    <button type="button" class="btn btn-secondary btn-block" (click)="kickOpen.set(false)">
+      Cancelar
+    </button>
+  </div>
+</app-sheet>

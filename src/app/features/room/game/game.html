@@ -1,0 +1,380 @@
+@if (room(); as r) {
+  @let s = settings();
+  @let t = turn();
+  @let cur = current();
+  @let mine = isMyTurn();
+  @let res = result();
+  @let state = stageState();
+
+  <!-- Turno actual -->
+  <section
+    #banner
+    class="banner card-glass"
+    [class.glow-cyan]="!mine"
+    [class.glow-yellow]="mine"
+    [class.is-mine]="mine"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    @if (cur) {
+      <app-avatar
+        [avatar]="cur.avatar"
+        [size]="48"
+        [ring]="mine ? 'yellow' : 'cyan'"
+        [online]="cur.connected"
+        [label]="cur.name"
+      />
+    }
+    <div class="banner-text">
+      <div class="banner-top">
+        @if (mine) {
+          <p class="label-caps neon-gold">¡Es tu turno!</p>
+        } @else {
+          <p class="label-caps text-cyan">Turno de</p>
+        }
+        <span class="chip chip-pill" [class.chip-cyan]="!mine" [class.chip-yellow-outline]="mine">
+          Turno #{{ t?.number ?? 1 }}
+        </span>
+      </div>
+      <h2 class="banner-name">{{ cur?.name ?? '—' }}</h2>
+    </div>
+  </section>
+
+  @if (cur && !cur.connected) {
+    <section class="offline" role="status">
+      <span class="icon" aria-hidden="true">wifi_off</span>
+      <p>
+        <strong>{{ cur.name }}</strong> se desconectó · su turno se saltará automáticamente
+      </p>
+      @if (store.isHost()) {
+        <button
+          type="button"
+          class="btn btn-orange btn-sm"
+          [disabled]="r.phase !== 'idle' || store.busy() || !store.online()"
+          (click)="skip()"
+        >
+          <span class="icon" aria-hidden="true">skip_next</span>Saltar turno
+        </button>
+      }
+    </section>
+  }
+
+  <!-- Puntos del turno y score del jugador del turno -->
+  <section class="stats card card-mesh" aria-label="Marcador del turno">
+    <div class="stat">
+      <span class="label-caps text-muted">Puntos del turno</span>
+      @for (pts of [turnPoints()]; track pts) {
+        <strong class="points anim-pop-in" [class.lost]="state === 'penalty'">+{{ pts }}</strong>
+      }
+      <div class="rolls" aria-label="Lanzamientos del turno">
+        @for (v of turnRolls(); track $index) {
+          <span class="roll-chip" [class.bad]="v === s.penaltyNumber">{{ v }}</span>
+        } @empty {
+          <span class="text-sm text-muted">Aún sin lanzar</span>
+        }
+      </div>
+    </div>
+    <div class="stat score">
+      <span class="label-caps text-muted">Score</span>
+      @let total = scoreOf(cur);
+      <strong class="score-value">
+        @for (v of [total]; track v) {
+          <span class="text-yellow anim-pop-in">{{ v }}</span>
+        }
+        <small>/ {{ s.targetScore }}</small>
+      </strong>
+      <div
+        class="progress"
+        role="progressbar"
+        aria-label="Progreso hacia la meta"
+        aria-valuemin="0"
+        [attr.aria-valuemax]="s.targetScore"
+        [attr.aria-valuenow]="total"
+      >
+        <div class="progress-fill" [style.width.%]="percent(total)"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Escenario del dado -->
+  <section
+    class="stage"
+    [attr.data-state]="state"
+    [style.--die]="diceSize() + 'px'"
+    aria-label="Dado"
+  >
+    <button
+      type="button"
+      class="icon-btn round mute"
+      aria-label="Silenciar sonidos"
+      [attr.aria-pressed]="sound.muted()"
+      (click)="sound.toggle()"
+    >
+      <span class="icon" aria-hidden="true">{{ sound.muted() ? 'volume_off' : 'volume_up' }}</span>
+    </button>
+
+    <app-dice
+      [class.stale]="diceStale()"
+      [value]="diceValue()"
+      [rolling]="rolling()"
+      [penaltyNumber]="s.penaltyNumber"
+      [mood]="diceMood()"
+      [size]="diceSize()"
+    />
+
+    @for (g of gainFx(); track g.id) {
+      <span class="gain-pop" aria-hidden="true">+{{ g.value }}</span>
+    }
+
+    <div class="caption">
+      @for (k of [captionKey()]; track k) {
+        @switch (state) {
+          @case ('rolling') {
+            <div class="cap">
+              <p class="cap-main pulse">Lanzando…</p>
+              <p class="cap-sub">¡Que no salga el {{ s.penaltyNumber }}!</p>
+            </div>
+          }
+          @case ('gain') {
+            <div class="cap">
+              <p class="cap-main">
+                @if (mine) {
+                  Sumas <span class="text-yellow">+{{ res?.value }}</span>
+                } @else {
+                  {{ cur?.name }} suma <span class="text-yellow">+{{ res?.value }}</span>
+                }
+              </p>
+              <p class="cap-sub">
+                {{ mine ? '¿Sigues lanzando o te plantas?' : 'Total: ' + res?.scoreAfter + ' pts' }}
+              </p>
+            </div>
+          }
+          @case ('penalty') {
+            <div class="cap cap-penalty">
+              <p class="cap-big">¡Penitencia!</p>
+              <p class="cap-loss">
+                -{{ res?.lostPoints }} pts
+                @if (s.penaltyMode === 'all') {
+                  · ¡vuelve a 0!
+                }
+              </p>
+              <p class="cap-sub">Pasa el turno a {{ next()?.name ?? 'el siguiente' }}…</p>
+            </div>
+          }
+          @case ('won') {
+            <div class="cap cap-won">
+              <p class="cap-big neon-gold">¡Meta alcanzada!</p>
+              <p class="cap-sub">{{ cur?.name }} llega a {{ res?.scoreAfter }} pts</p>
+            </div>
+          }
+          @default {
+            <div class="cap">
+              @if (mine) {
+                <p class="cap-main">¡Lanza el dado!</p>
+                <p class="cap-sub">
+                  Evita el {{ s.penaltyNumber }}:
+                  {{ s.penaltyMode === 'all' ? 'te deja en 0' : 'pierdes lo del turno' }}
+                </p>
+              } @else {
+                <p class="cap-main">{{ cur?.name }} está por lanzar</p>
+                <p class="cap-sub">Penitencia: {{ s.penaltyNumber }}</p>
+              }
+            </div>
+          }
+        }
+      }
+    </div>
+  </section>
+
+  <!-- Acciones: fijas abajo mientras su sitio queda fuera de la pantalla -->
+  @if (mine) {
+    @let mustRoll = r.phase !== 'penalty' && !t?.rolls?.length;
+    <section class="actions" aria-label="Tus acciones">
+      <button
+        type="button"
+        class="btn btn-primary roll-btn"
+        [class.is-rolling]="r.phase === 'rolling'"
+        [disabled]="!store.canRoll() || store.busy()"
+        aria-keyshortcuts="Space Enter"
+        (click)="roll()"
+      >
+        <span class="icon filled" aria-hidden="true">casino</span>
+        {{ r.phase === 'rolling' ? 'Lanzando…' : 'Lanzar dado' }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary pass-btn"
+        aria-label="Plantarse / Siguiente"
+        [attr.aria-describedby]="mustRoll ? 'rr-pass-hint' : null"
+        [disabled]="!store.canPass() || store.busy()"
+        aria-keyshortcuts="P"
+        (click)="pass()"
+      >
+        <span class="icon" aria-hidden="true">front_hand</span>Plantarse
+      </button>
+    </section>
+    <div class="actions-tail">
+      @if (r.phase === 'penalty') {
+        <p class="hint text-sm text-red">
+          <span class="icon" aria-hidden="true">skull</span>Tu turno termina…
+        </p>
+      } @else if (mustRoll) {
+        <p class="hint text-sm text-muted" id="rr-pass-hint">
+          <span class="icon" aria-hidden="true">info</span>Lanza al menos una vez para poder pasar
+        </p>
+      }
+      <p class="keys" aria-hidden="true">
+        <kbd class="chip">Espacio</kbd> lanzar · <kbd class="chip">P</kbd> plantarse
+      </p>
+    </div>
+  } @else if (cur) {
+    <section class="waiting card">
+      <app-avatar [avatar]="cur.avatar" [size]="40" [online]="cur.connected" [label]="cur.name" />
+      <div class="waiting-text">
+        <p class="waiting-title">
+          {{ r.phase === 'won' ? '¡' + cur.name + ' gana!' : 'Esperando a ' + cur.name + '…' }}
+        </p>
+        <p class="text-sm text-muted">
+          @switch (r.phase) {
+            @case ('rolling') {
+              lanzando…
+            }
+            @case ('penalty') {
+              ¡le salió la penitencia!
+            }
+            @case ('won') {
+              preparando resultados…
+            }
+            @default {
+              @if (!cur.connected) {
+                sin conexión
+              } @else {
+                {{
+                  t?.rolls?.length ? '¿seguirá lanzando o se planta?' : 'decidiendo su lanzamiento'
+                }}
+              }
+            }
+          }
+        </p>
+      </div>
+      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+    </section>
+  }
+
+  <!-- Orden de turnos -->
+  <section class="block" aria-labelledby="order-title">
+    <h3 class="label-caps section-title" id="order-title">Orden de turnos</h3>
+    <ol class="order scroll-thin" #strip>
+      @for (p of r.players; track p.id; let last = $last) {
+        @let isCur = p.id === cur?.id;
+        <li
+          class="order-item"
+          [class.is-current]="isCur"
+          [class.is-next]="p.id === next()?.id"
+          [attr.aria-current]="isCur ? 'step' : null"
+        >
+          <span class="order-who">
+            <app-avatar
+              [avatar]="p.avatar"
+              [size]="36"
+              [ring]="isCur ? 'cyan' : 'none'"
+              [dimmed]="!p.connected"
+              [label]="p.name"
+            />
+            <span class="order-name">{{ p.name }}</span>
+          </span>
+          <span class="icon order-arrow" aria-hidden="true">{{
+            last ? 'u_turn_left' : 'chevron_right'
+          }}</span>
+        </li>
+      }
+    </ol>
+  </section>
+
+  <!-- Clasificación -->
+  <section class="block" aria-labelledby="board-title">
+    <h3 class="label-caps section-title" id="board-title">Clasificación</h3>
+    <ol class="board">
+      @for (row of board(); track row.player.id; let i = $index) {
+        @let p = row.player;
+        @let isTurn = p.id === cur?.id;
+        <li class="board-row" [class.is-turn]="isTurn" [class.is-off]="!p.connected">
+          <span class="pos">{{ i + 1 }}</span>
+          <app-avatar
+            [avatar]="p.avatar"
+            [size]="40"
+            [online]="p.connected"
+            [host]="p.id === r.hostId"
+            [dimmed]="!p.connected"
+            [label]="p.name"
+          />
+          <div class="who">
+            <p class="who-name">
+              <span class="name">{{ p.name }}</span>
+              @if (p.id === store.me()?.id) {
+                <span class="chip chip-cyan">Tú</span>
+              }
+            </p>
+            <p class="who-status">
+              @if (isTurn) {
+                <span class="status-dot cyan" aria-hidden="true"></span
+                >{{ r.phase === 'rolling' ? 'Lanzando…' : 'En turno' }}
+              } @else if (!p.connected) {
+                <span class="status-dot offline" aria-hidden="true"></span>Desconectado
+              } @else {
+                Esperando…
+              }
+            </p>
+            <div class="progress mini" [class.cyan]="isTurn" aria-hidden="true">
+              <div class="progress-fill" [style.width.%]="percent(row.score)"></div>
+            </div>
+          </div>
+          @for (v of [row.score]; track v) {
+            <span class="chip pts anim-pop-in" [class.chip-yellow]="i === 0 && v > 0">
+              {{ v }} pts
+            </span>
+          }
+        </li>
+      }
+    </ol>
+  </section>
+
+  <!-- Actividad -->
+  <section class="block" aria-labelledby="log-title">
+    <h3 class="label-caps section-title" id="log-title">Actividad</h3>
+    <ul class="log card" role="log" aria-labelledby="log-title">
+      @for (e of recentLog(); track e.id) {
+        <li class="log-item anim-fade-up" [style.--tone]="logTone(e.kind)">
+          <span class="log-icon" aria-hidden="true"
+            ><span class="icon filled">{{ logIcon(e.kind) }}</span></span
+          >
+          <span class="log-text">{{ e.text }}</span>
+        </li>
+      } @empty {
+        <li class="text-sm text-muted">Aún no hay jugadas.</li>
+      }
+    </ul>
+  </section>
+
+  <!-- Efectos a pantalla completa -->
+  @if (penaltyFx(); as fx) {
+    <div class="pfx" animate.leave="pfx-out">
+      <div class="pfx-vignette" aria-hidden="true"></div>
+      <button type="button" class="pfx-card" (click)="dismissPenalty()">
+        <span class="pfx-skull" aria-hidden="true"><span class="icon filled">skull</span></span>
+        <span class="pfx-title">¡Penitencia!</span>
+        <span class="pfx-line">{{ fx.mine ? 'Sacaste' : fx.name + ' sacó' }} {{ fx.value }}</span>
+        <span class="pfx-loss">
+          {{ fx.mine ? 'Pierdes' : 'Pierde' }} {{ fx.lost }} pts
+          @if (s.penaltyMode === 'all') {
+            <small>¡vuelve a 0!</small>
+          }
+        </span>
+        <span class="pfx-hint label-caps">Toca para cerrar</span>
+      </button>
+    </div>
+  }
+  @if (winFx()) {
+    <div class="wfx" aria-hidden="true"></div>
+  }
+}

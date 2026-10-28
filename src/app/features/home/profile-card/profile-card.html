@@ -1,0 +1,70 @@
+<section #card class="card passport">
+  <div class="head">
+    <label class="label-caps field-label" [for]="ids.name">
+      <span class="icon filled" aria-hidden="true">sports_esports</span>Apodo del jugador
+    </label>
+    <span class="label-caps tag" aria-hidden="true">Pasaporte arcade</span>
+  </div>
+
+  <div class="name-field">
+    <span class="icon lead" aria-hidden="true">badge</span>
+    <input
+      #nameInput
+      class="input name-input"
+      type="text"
+      placeholder="Tu apodo"
+      autocomplete="nickname"
+      spellcheck="false"
+      enterkeyhint="done"
+      [id]="ids.name"
+      [maxLength]="limits.max"
+      [value]="profile().name"
+      [attr.aria-invalid]="showError() || null"
+      [attr.aria-describedby]="ids.hint"
+      (input)="onName($event)"
+      (blur)="onBlur()"
+    />
+    <button type="button" class="random" title="Generar un apodo aleatorio" (click)="random()">
+      <span class="icon" aria-hidden="true">shuffle</span>Azar
+    </button>
+  </div>
+  <p class="hint text-sm" aria-live="polite" [id]="ids.hint">
+    @if (showError()) {
+      <span class="icon" aria-hidden="true">error</span>
+      {{ problem() }}
+    }
+  </p>
+
+  <div class="avatars-head">
+    <span class="label-caps" [id]="ids.avatars">Elige tu avatar</span>
+    <span class="label-caps text-yellow" aria-hidden="true">{{ selected().label }}</span>
+  </div>
+  <div
+    #avatarRow
+    class="avatar-row scroll-thin"
+    role="radiogroup"
+    [attr.aria-labelledby]="ids.avatars"
+    (keydown)="onAvatarKey($event)"
+  >
+    @for (a of avatars; track a.id) {
+      @let on = a.id === profile().avatar;
+      <button
+        type="button"
+        class="avatar-opt"
+        role="radio"
+        [class.on]="on"
+        [attr.aria-checked]="on"
+        [attr.aria-label]="a.label"
+        [tabIndex]="on ? 0 : -1"
+        (click)="pick(a.id)"
+      >
+        <app-avatar
+          aria-hidden="true"
+          [avatar]="a.id"
+          [size]="compact() ? 44 : 52"
+          [ring]="on ? 'yellow' : 'none'"
+        />
+      </button>
+    }
+  </div>
+</section>

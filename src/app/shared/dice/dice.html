@@ -1,0 +1,30 @@
+<div
+  #root
+  class="dice"
+  [class.is-rolling]="rolling()"
+  [class.mood-penalty]="mood() === 'penalty'"
+  [class.mood-win]="mood() === 'win'"
+>
+  <div class="halo" aria-hidden="true"></div>
+  <div class="stage" aria-hidden="true">
+    <div class="hop">
+      <div class="tilt">
+        <div #cube class="cube">
+          <span class="core"></span>
+          <span class="core core-x"></span>
+          <span class="core core-y"></span>
+          @for (n of faces; track n) {
+            <span class="face" [attr.data-face]="n" [class.penalty]="n === penaltyNumber()">
+              @if (n === penaltyNumber()) {
+                <span class="icon filled skull">skull</span>
+              }
+              {{ n }}
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="shadow" aria-hidden="true"></div>
+  <span class="sr-only" aria-live="polite" aria-atomic="true">{{ announcement() }}</span>
+</div>

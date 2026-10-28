@@ -1,0 +1,30 @@
+<header class="bar">
+  <div class="inner">
+    <div class="side start">
+      @if (showBack()) {
+        <button type="button" class="icon-btn back" aria-label="Volver" (click)="onBack()">
+          <span class="icon" aria-hidden="true">arrow_back</span>
+        </button>
+      }
+    </div>
+
+    <div class="logo">
+      <span class="icon filled logo-die" aria-hidden="true">casino</span>
+      <span class="brand-title wordmark">ROLL&amp;RUN</span>
+    </div>
+
+    <div class="side end">
+      <ng-content />
+      @if (showProfile()) {
+        <app-avatar
+          [avatar]="avatar()"
+          [size]="44"
+          ring="yellow"
+          [online]="online()"
+          [label]="profileLabel()"
+          [attr.title]="statusLabel()"
+        />
+      }
+    </div>
+  </div>
+</header>

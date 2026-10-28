@@ -1,0 +1,193 @@
+:host {
+  display: contents;
+}
+
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+
+  // Angular espera a esta animación (la del propio elemento) antes de retirarlo del DOM.
+  &.is-leaving {
+    animation: sheet-hold 0.22s linear both;
+
+    .backdrop {
+      animation: sheet-fade-out 0.22s ease-in both;
+    }
+
+    .panel {
+      animation: sheet-down 0.22s ease-in both;
+    }
+  }
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 6, 20, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: sheet-fade-in 0.25s ease-out both;
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: var(--rr-page-max);
+  max-height: min(88dvh, 760px);
+  padding-bottom: env(safe-area-inset-bottom);
+  border: 1px solid var(--rr-border-strong);
+  border-bottom: 0;
+  border-radius: var(--rr-radius-xl) var(--rr-radius-xl) 0 0;
+  background-color: var(--rr-surface-container);
+  background-image:
+    radial-gradient(at 85% 0%, rgba(0, 241, 254, 0.08) 0, transparent 45%),
+    radial-gradient(at 0% 100%, rgba(255, 215, 0, 0.06) 0, transparent 45%),
+    linear-gradient(180deg, var(--rr-surface-high), var(--rr-surface-container) 40%);
+  box-shadow:
+    0 -12px 40px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: sheet-up 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.04) both;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.grabber {
+  flex-shrink: 0;
+  width: 44px;
+  height: 5px;
+  margin: 10px auto 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px 12px 20px;
+}
+
+.head-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--rr-radius-md);
+  color: var(--rr-on-yellow);
+  background: linear-gradient(
+    180deg,
+    var(--rr-yellow-light),
+    var(--rr-yellow) 55%,
+    var(--rr-yellow-dim)
+  );
+  box-shadow:
+    0 3px 0 var(--rr-yellow-deep),
+    0 0 14px rgba(255, 215, 0, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.7);
+}
+
+.head-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.close {
+  width: 40px;
+  height: 40px;
+  color: var(--rr-on-surface-variant);
+}
+
+.body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 4px 20px 20px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 20px 20px;
+  border-top: 1px solid var(--rr-border);
+
+  &:empty {
+    display: none;
+  }
+}
+
+@media (min-width: 600px) {
+  .layer {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .panel {
+    max-height: min(85dvh, 760px);
+    padding-bottom: 0;
+    border-bottom: 1px solid var(--rr-border-strong);
+    border-radius: var(--rr-radius-xl);
+    animation: rr-pop-in 0.4s var(--rr-ease-bounce) both;
+  }
+
+  .layer.is-leaving .panel {
+    animation: sheet-shrink 0.22s ease-in both;
+  }
+
+  .grabber {
+    display: none;
+  }
+
+  .head {
+    padding-top: 18px;
+  }
+}
+
+@keyframes sheet-hold {
+  from,
+  to {
+    visibility: visible;
+  }
+}
+
+@keyframes sheet-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes sheet-down {
+  to {
+    transform: translateY(60%);
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-shrink {
+  to {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+}

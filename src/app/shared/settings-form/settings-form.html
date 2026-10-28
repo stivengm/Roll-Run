@@ -1,0 +1,179 @@
+@let s = settings();
+<fieldset class="form" [disabled]="disabled()">
+  <legend class="sr-only">Reglas de la partida</legend>
+
+  <!-- Meta de puntos -->
+  <section class="setting target" [attr.aria-labelledby]="ids.target">
+    <header class="head">
+      <h3 class="title title-md" [id]="ids.target">
+        <span class="icon text-cyan" aria-hidden="true">flag</span>Meta de puntos
+      </h3>
+      <span class="chip win-chip">Condición de victoria</span>
+    </header>
+    <p class="text-sm text-muted">El primer jugador en llegar a esta meta gana la partida.</p>
+
+    <div class="stepper">
+      <button
+        type="button"
+        class="step-btn"
+        aria-label="Bajar meta"
+        [disabled]="s.targetScore <= limits.targetScore.min"
+        (pointerdown)="startRepeat(-1, $event)"
+        (pointerup)="stopRepeat()"
+        (pointerleave)="stopRepeat()"
+        (pointercancel)="stopRepeat()"
+        (contextmenu)="$event.preventDefault()"
+        (click)="onStepClick(-1, $event)"
+      >
+        <span class="icon" aria-hidden="true">remove</span>
+      </button>
+      <label class="score-field">
+        <input
+          class="score-input"
+          type="number"
+          inputmode="numeric"
+          enterkeyhint="done"
+          [min]="limits.targetScore.min"
+          [max]="limits.targetScore.max"
+          [step]="limits.targetScore.step"
+          [value]="s.targetScore"
+          [attr.aria-labelledby]="ids.target"
+          (change)="commitTarget($event)"
+          (keydown.enter)="onTargetEnter($event)"
+        />
+        <span class="score-unit" aria-hidden="true">pts</span>
+      </label>
+      <button
+        type="button"
+        class="step-btn"
+        aria-label="Subir meta"
+        [disabled]="s.targetScore >= limits.targetScore.max"
+        (pointerdown)="startRepeat(1, $event)"
+        (pointerup)="stopRepeat()"
+        (pointerleave)="stopRepeat()"
+        (pointercancel)="stopRepeat()"
+        (contextmenu)="$event.preventDefault()"
+        (click)="onStepClick(1, $event)"
+      >
+        <span class="icon" aria-hidden="true">add</span>
+      </button>
+    </div>
+
+    <div class="shortcuts" role="group" aria-label="Metas rápidas">
+      @for (v of shortcuts; track v) {
+        <button
+          type="button"
+          class="chip chip-pill shortcut"
+          [class.chip-yellow]="s.targetScore === v"
+          [attr.aria-pressed]="s.targetScore === v"
+          (click)="patch({ targetScore: v })"
+        >
+          {{ v }} pts
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- Dado de penitencia -->
+  <section class="setting penalty" [attr.aria-labelledby]="ids.penalty">
+    <header class="head">
+      <h3 class="title title-md" [id]="ids.penalty">
+        <span class="icon filled skull" aria-hidden="true">skull</span>Dado de penitencia
+      </h3>
+    </header>
+    <p class="text-sm text-muted">{{ penaltyHint() }}</p>
+
+    <div
+      class="faces"
+      role="radiogroup"
+      [attr.aria-labelledby]="ids.penalty"
+      (keydown)="onFaceKey($event)"
+    >
+      @for (n of faces; track n) {
+        <button
+          type="button"
+          class="face-btn"
+          role="radio"
+          [attr.aria-checked]="s.penaltyNumber === n"
+          [attr.aria-label]="'Número ' + n"
+          [tabIndex]="s.penaltyNumber === n ? 0 : -1"
+          (click)="patch({ penaltyNumber: n })"
+        >
+          {{ n }}
+        </button>
+      }
+    </div>
+
+    <p class="label-caps sub-label" [id]="ids.mode">¿Qué se pierde?</p>
+    <div
+      class="modes"
+      role="radiogroup"
+      [attr.aria-labelledby]="ids.mode"
+      (keydown)="onModeKey($event)"
+    >
+      @for (m of modes; track m.id) {
+        <button
+          type="button"
+          class="mode"
+          role="radio"
+          [attr.aria-checked]="s.penaltyMode === m.id"
+          [tabIndex]="s.penaltyMode === m.id ? 0 : -1"
+          (click)="patch({ penaltyMode: m.id })"
+        >
+          <span class="mode-title">
+            <span class="icon" aria-hidden="true">{{
+              m.id === 'all' ? 'restart_alt' : 'undo'
+            }}</span>
+            {{ m.title }}
+          </span>
+          <span class="mode-desc">{{ m.description }}</span>
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- Máximo de jugadores -->
+  <section class="setting players" [attr.aria-labelledby]="ids.players">
+    <header class="head">
+      <h3 class="title title-md" [id]="ids.players">
+        <span class="icon group" aria-hidden="true">group</span>Máximo de jugadores
+      </h3>
+    </header>
+
+    <div
+      class="slider"
+      [style.--frac]="playersFrac(s.maxPlayers)"
+      [style.--floor]="playersFrac(playersFloor())"
+    >
+      <input
+        class="range"
+        type="range"
+        step="1"
+        [min]="limits.maxPlayers.min"
+        [max]="limits.maxPlayers.max"
+        [value]="s.maxPlayers"
+        [attr.aria-labelledby]="ids.players"
+        [attr.aria-valuetext]="s.maxPlayers + ' jugadores'"
+        (input)="onPlayers($event)"
+      />
+      <div class="marks" aria-hidden="true">
+        @for (m of playerMarks; track m) {
+          <span class="mark" [class.on]="m === s.maxPlayers" [style.--at]="playersFrac(m)">{{
+            m
+          }}</span>
+        }
+      </div>
+    </div>
+
+    <p class="players-big" aria-hidden="true">
+      <span class="big">{{ s.maxPlayers }}</span> jugadores
+    </p>
+
+    @if (playersFloor() > limits.maxPlayers.min) {
+      <p class="floor-hint text-sm">
+        <span class="icon" aria-hidden="true">info</span>
+        Ya hay {{ playersFloor() }} jugadores en la sala: el cupo no puede ser menor.
+      </p>
+    }
+  </section>
+</fieldset>

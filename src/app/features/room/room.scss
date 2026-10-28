@@ -1,0 +1,79 @@
+:host {
+  display: block;
+}
+
+.room {
+  gap: 16px;
+}
+
+// Aviso pegado bajo la barra superior mientras el socket no está en línea.
+.reconnecting {
+  position: sticky;
+  // Alto de <app-top-bar> (~69px): mejor quedar un pelo debajo de la barra que dejar un hueco.
+  top: calc(68px + env(safe-area-inset-top));
+  z-index: 39;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: -16px calc(-1 * var(--rr-gutter)) 0;
+  padding: 8px var(--rr-gutter);
+  border-bottom: 1px solid rgba(0, 241, 254, 0.35);
+  background: rgba(0, 54, 58, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.35),
+    0 0 18px rgba(0, 241, 254, 0.15);
+  color: var(--rr-cyan);
+  animation: room-drop 0.3s ease-out both;
+
+  .icon {
+    font-size: 18px;
+  }
+
+  > * {
+    animation: room-breathe 1.6s ease-in-out infinite;
+  }
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.loader {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 60dvh;
+}
+
+.loader-text {
+  color: var(--rr-cyan);
+  animation: room-breathe 1.6s ease-in-out infinite;
+}
+
+.leave-text {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--rr-on-surface-variant);
+}
+
+@keyframes room-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes room-breathe {
+  50% {
+    opacity: 0.55;
+  }
+}

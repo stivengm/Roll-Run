@@ -1,0 +1,115 @@
+<main class="page join">
+  <app-top-bar backTo="/" />
+
+  <header class="intro anim-fade-up">
+    <h1 class="headline">Unirse a partida</h1>
+    <p class="text-muted">Ingresa el código de 6 dígitos de la sala.</p>
+  </header>
+
+  @if (editingProfile()) {
+    <div class="profile-edit">
+      <app-profile-card class="anim-fade-up" [compact]="true" />
+      @if (validName()) {
+        <button type="button" class="btn btn-ghost btn-sm done" (click)="editingProfile.set(false)">
+          <span class="icon" aria-hidden="true">check</span>Listo
+        </button>
+      }
+    </div>
+  } @else {
+    <app-player-chip class="anim-fade-up">
+      <button type="button" class="btn btn-ghost btn-sm change" (click)="showProfile()">
+        Cambiar
+      </button>
+    </app-player-chip>
+  }
+
+  @if (sessionCode(); as current) {
+    @if (!isRejoin()) {
+      <p class="notice text-sm">
+        <span class="icon" aria-hidden="true">info</span>
+        <span>
+          Tienes una partida en curso en la sala
+          <strong>{{ formatRoomCode(current) }}</strong
+          >.
+          <a [routerLink]="['/sala', current]">Volver a ella</a>
+        </span>
+      </p>
+    }
+  }
+
+  <section class="card card-mesh code-card" aria-labelledby="join-code-label">
+    <div class="code-head">
+      <span class="label-caps" id="join-code-label">Código de sala</span>
+      @if (isRejoin()) {
+        <span class="chip chip-cyan chip-pill">Tu sala actual</span>
+      }
+    </div>
+    <div
+      #boxes
+      class="boxes"
+      aria-hidden="true"
+      [class.error]="error()"
+      [class.complete]="complete()"
+    >
+      @for (i of slots; track i) {
+        @if (i === 3) {
+          <span class="sep">·</span>
+        }
+        <span class="box" [class.filled]="i < digits().length" [class.active]="i === activeIndex()">
+          {{ digits().charAt(i) }}
+        </span>
+      }
+    </div>
+    <p class="sr-only" aria-live="polite">{{ srStatus() }}</p>
+  </section>
+
+  <div class="keypad" role="group" aria-label="Teclado numérico">
+    @for (k of keys; track k) {
+      <button type="button" class="key" (click)="press(k)">{{ k }}</button>
+    }
+    <button
+      type="button"
+      class="key tool paste"
+      aria-label="Pegar código"
+      title="Pegar código"
+      (click)="pasteFromClipboard()"
+    >
+      <span class="icon" aria-hidden="true">content_paste</span>
+    </button>
+    <button type="button" class="key" (click)="press('0')">0</button>
+    <button
+      type="button"
+      class="key tool erase"
+      aria-label="Borrar dígito"
+      title="Borrar dígito"
+      (click)="erase()"
+    >
+      <span class="icon" aria-hidden="true">backspace</span>
+    </button>
+  </div>
+
+  <div class="cta">
+    <button
+      type="button"
+      class="btn btn-primary btn-lg btn-block"
+      [disabled]="!canSubmit()"
+      [attr.aria-busy]="joining()"
+      (click)="submit()"
+    >
+      @if (joining()) {
+        <span class="icon spin" aria-hidden="true">progress_activity</span>
+        Entrando…
+      } @else {
+        {{ isRejoin() ? 'Volver a la sala' : 'Entrar a la sala' }}
+        <span class="icon filled" aria-hidden="true">login</span>
+      }
+    </button>
+    @if (complete() && !isRejoin()) {
+      @if (!validName()) {
+        <p class="cta-hint text-sm">Escribe tu apodo para poder entrar.</p>
+      } @else if (!online()) {
+        <p class="cta-hint text-sm" role="status">Sin conexión con el servidor. Reintentando…</p>
+      }
+    }
+  </div>
+</main>

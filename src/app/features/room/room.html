@@ -1,0 +1,74 @@
+@let current = room();
+
+<div class="page room">
+  <app-top-bar [interceptBack]="true" (back)="askLeave()">
+    <button
+      type="button"
+      class="icon-btn"
+      aria-label="Cómo jugar"
+      aria-haspopup="dialog"
+      [disabled]="!current"
+      (click)="rulesOpen.set(true)"
+    >
+      <span class="icon" aria-hidden="true">help</span>
+    </button>
+  </app-top-bar>
+
+  @if (current) {
+    @if (offline()) {
+      <div class="reconnecting" role="status">
+        <span class="icon" aria-hidden="true">wifi_tethering</span>
+        <span class="label-caps">Reconectando…</span>
+      </div>
+    }
+
+    <main class="body">
+      @switch (current.status) {
+        @case ('lobby') {
+          <app-lobby />
+        }
+        @case ('playing') {
+          <app-game />
+        }
+        @case ('finished') {
+          <app-results />
+        }
+      }
+    </main>
+  } @else {
+    <div class="loader" role="status">
+      <app-dice [rolling]="true" [size]="72" />
+      <p class="label-caps loader-text">Conectando a la sala…</p>
+    </div>
+  }
+</div>
+
+@if (current) {
+  <app-rules-sheet
+    [open]="rulesOpen()"
+    [settings]="current.settings"
+    (closed)="rulesOpen.set(false)"
+  />
+}
+
+<app-sheet
+  [open]="leaveOpen()"
+  title="¿Salir de la sala?"
+  icon="logout"
+  (closed)="leaveOpen.set(false)"
+>
+  <div class="leave-text">
+    @for (line of leaveLines(); track $index) {
+      <p>{{ line }}</p>
+    }
+  </div>
+  <div sheetActions>
+    <button type="button" class="btn btn-danger btn-block" [disabled]="leaving()" (click)="leave()">
+      <span class="icon" aria-hidden="true">logout</span>
+      Salir
+    </button>
+    <button type="button" class="btn btn-secondary btn-block" (click)="leaveOpen.set(false)">
+      Cancelar
+    </button>
+  </div>
+</app-sheet>

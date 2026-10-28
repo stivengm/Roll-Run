@@ -1,0 +1,571 @@
+:host {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.intro,
+.roster-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+// Botón compacto con contorno cian (copiar, invitar)
+.mini-btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid rgba(0, 241, 254, 0.4);
+  border-radius: var(--rr-radius-md);
+  background: rgba(0, 241, 254, 0.08);
+  color: var(--rr-cyan);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  transition:
+    transform 0.12s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+
+  .icon {
+    font-size: 18px;
+  }
+
+  &:hover {
+    background: var(--rr-cyan);
+    color: var(--rr-on-cyan);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+// ---------------------------------------------------------------- Código
+
+.code-card {
+  overflow: hidden;
+  padding: 16px;
+  border-color: rgba(0, 241, 254, 0.3);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -48px;
+    right: -48px;
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    background: rgba(0, 241, 254, 0.15);
+    filter: blur(24px);
+    pointer-events: none;
+  }
+}
+
+.code-head,
+.code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.code-head {
+  margin-bottom: 6px;
+}
+
+.code-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--rr-on-surface-variant);
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+.private {
+  padding: 2px 8px;
+  font-size: 10px;
+  color: var(--rr-cyan-light);
+  background: var(--rr-surface-high);
+
+  .icon {
+    font-size: 14px;
+  }
+}
+
+.code {
+  font-family: var(--rr-font-mono);
+  font-size: clamp(26px, 8.4vw, 38px);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+
+  .sep {
+    margin: 0 0.12em 0 0;
+    color: rgba(255, 255, 255, 0.4);
+    text-shadow: none;
+  }
+}
+
+.copy {
+  min-height: 44px;
+}
+
+// ---------------------------------------------------------------- Reglas
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: var(--rr-radius-md);
+  border-color: rgba(255, 215, 0, 0.2);
+
+  .icon {
+    font-size: 18px;
+  }
+
+  &.danger {
+    border-color: rgba(255, 90, 95, 0.4);
+    color: var(--rr-red);
+
+    .stat-label {
+      color: inherit;
+    }
+
+    .stat-value {
+      text-shadow: 0 0 8px rgba(255, 82, 82, 0.4);
+    }
+  }
+
+  &.slots {
+    border-color: rgba(0, 241, 254, 0.2);
+  }
+
+  .progress {
+    height: 6px;
+    margin-top: 6px;
+  }
+}
+
+.stat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.stat-label {
+  overflow: hidden;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-overflow: ellipsis;
+  color: var(--rr-on-surface-variant);
+}
+
+.stat-value {
+  font-family: var(--rr-font-display);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.stat-sub {
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1.25;
+  color: var(--rr-on-surface-variant);
+}
+
+// ---------------------------------------------------------------- Jugadores
+
+.roster-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 0 4px;
+}
+
+.roster-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  .icon {
+    font-size: 20px;
+    color: var(--rr-yellow-light);
+  }
+}
+
+.count {
+  padding: 2px 8px;
+  font-size: 11px;
+  color: var(--rr-yellow-light);
+  background: var(--rr-surface-high);
+  border-color: rgba(255, 225, 109, 0.2);
+
+  &.full {
+    border-color: rgba(255, 215, 0, 0.6);
+  }
+}
+
+.mood {
+  margin-left: auto;
+  padding: 3px 10px;
+  font-size: 10px;
+
+  .icon {
+    font-size: 14px;
+  }
+}
+
+.ping {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.waiting {
+  animation: lobby-breathe 2s ease-in-out infinite;
+}
+
+.order-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px;
+  font-size: 12px;
+  color: var(--rr-muted);
+
+  .icon {
+    font-size: 16px;
+  }
+}
+
+.roster {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--rr-radius-lg);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.players {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.player {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--rr-radius-md);
+  background: rgba(29, 29, 54, 0.7);
+
+  &.is-host {
+    padding-left: 16px;
+    border: 2px solid rgba(255, 215, 0, 0.6);
+    background: rgba(29, 29, 54, 0.9);
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.15);
+
+    // Barra de acento del anfitrión
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 6px;
+      background: linear-gradient(180deg, var(--rr-yellow), var(--rr-orange));
+    }
+
+    .order {
+      color: rgba(255, 215, 0, 0.85);
+      border-color: rgba(255, 215, 0, 0.25);
+    }
+  }
+
+  &.is-me:not(.is-host) {
+    border-color: rgba(0, 241, 254, 0.45);
+  }
+
+  &.offline .name {
+    color: var(--rr-on-surface-variant);
+  }
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  min-width: 0;
+}
+
+// Hasta dos líneas: en la lista que fija el orden de turnos el nombre debe leerse.
+.name {
+  display: -webkit-box;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.tag {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  font-size: 9px;
+  border-radius: var(--rr-radius-sm);
+}
+
+.state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--rr-green);
+
+  .dot {
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: currentColor;
+    box-shadow: 0 0 6px currentColor;
+  }
+
+  &.off {
+    color: var(--rr-muted);
+
+    .dot {
+      box-shadow: none;
+    }
+  }
+}
+
+.state-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.kick {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--rr-radius-md);
+  border-color: rgba(255, 90, 95, 0.3);
+  background: rgba(255, 90, 95, 0.08);
+  color: var(--rr-red-light);
+
+  .icon {
+    font-size: 20px;
+  }
+}
+
+.order {
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--rr-radius);
+  background: var(--rr-surface-high);
+  font-family: var(--rr-font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--rr-on-surface-variant);
+}
+
+.slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 2px dashed rgba(0, 241, 254, 0.3);
+  border-radius: var(--rr-radius-md);
+  background: rgba(26, 26, 46, 0.6);
+}
+
+.slot-icon {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 1px dashed rgba(0, 241, 254, 0.4);
+  border-radius: var(--rr-radius-md);
+  background: rgba(0, 241, 254, 0.05);
+  color: var(--rr-cyan);
+}
+
+.slot-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.slot-title {
+  font-family: var(--rr-font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--rr-on-surface-variant);
+}
+
+.slot-sub {
+  font-size: 12px;
+  color: var(--rr-muted);
+}
+
+// En pantallas estrechas el botón invitar queda solo con el ícono para no partir el texto.
+@media (max-width: 400px) {
+  // El nombre ocupa su propia línea y los chips (con P#) bajan a la siguiente.
+  .name {
+    flex: 1 0 100%;
+  }
+
+  // '#n' repite el chip P#: se oculta a la vista pero sigue leyéndose "Turno n".
+  .order {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .slot .mini-btn {
+    width: 40px;
+    justify-content: center;
+    padding: 0;
+
+    .label-caps {
+      display: none;
+    }
+  }
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 2px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--rr-on-surface-variant);
+
+  .icon {
+    font-size: 18px;
+    color: var(--rr-yellow);
+  }
+}
+
+// ---------------------------------------------------------------- Acciones
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.start {
+  overflow: hidden;
+
+  &:not(:disabled)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.45) 50%,
+      transparent 70%
+    );
+    transform: translateX(-100%);
+    animation: rr-shimmer 3.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+
+.share {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(29, 29, 54, 0.7);
+  color: var(--rr-on-surface);
+  font-size: 12px;
+
+  .icon {
+    font-size: 18px;
+    color: var(--rr-cyan);
+  }
+}
+
+// ---------------------------------------------------------------- Animaciones
+
+.player-in {
+  animation: rr-pop-in 0.45s var(--rr-ease-bounce) both;
+}
+
+.player-out {
+  animation: lobby-out 0.25s ease-in both;
+}
+
+@keyframes lobby-out {
+  to {
+    opacity: 0;
+    transform: translateX(24px) scale(0.96);
+  }
+}
+
+@keyframes lobby-breathe {
+  50% {
+    opacity: 0.6;
+  }
+}

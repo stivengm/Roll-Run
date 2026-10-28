@@ -1,0 +1,88 @@
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+// Dentro de .page la barra sangra hasta los bordes del contenedor.
+:host-context(.page) {
+  margin-inline: calc(-1 * var(--rr-gutter));
+}
+
+.bar {
+  padding-top: env(safe-area-inset-top);
+  background: rgba(12, 12, 31, 0.86);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--rr-border);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+  max-width: var(--rr-page-max);
+  min-height: 64px;
+  margin: 0 auto;
+  padding: 8px var(--rr-gutter);
+}
+
+// Sin min-width: 0 a propósito: la columna crece con los botones proyectados en vez de
+// solaparse con el logo.
+.side {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.end {
+  justify-content: flex-end;
+
+  // Botones que proyecta la página: un poco más compactos que el .icon-btn base.
+  ::ng-deep .icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--rr-radius-md);
+  }
+
+  app-avatar {
+    margin: 4px 4px 4px 6px;
+  }
+}
+
+.back {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--rr-radius-md);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  user-select: none;
+}
+
+.logo-die {
+  font-size: 20px;
+  color: var(--rr-yellow);
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+  animation: rr-float 3.2s ease-in-out infinite;
+}
+
+.wordmark {
+  // El padding evita que background-clip recorte la inclinación de la itálica.
+  padding: 0.04em 0.12em 0.04em 0.02em;
+  font-size: clamp(22px, 6.6vw, 30px);
+  white-space: nowrap;
+}
+
+@media (max-width: 340px) {
+  .logo-die {
+    display: none;
+  }
+}

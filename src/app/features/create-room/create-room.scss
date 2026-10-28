@@ -1,0 +1,86 @@
+.create {
+  gap: 20px;
+  padding-bottom: 0;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.change {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.notice {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--rr-radius-md);
+  border: 1px solid rgba(253, 139, 0, 0.4);
+  background: rgba(253, 139, 0, 0.1);
+  color: var(--rr-orange-light);
+
+  .icon {
+    font-size: 20px;
+  }
+
+  strong {
+    font-family: var(--rr-font-mono);
+    white-space: nowrap;
+  }
+
+  a {
+    margin-left: 4px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+}
+
+.form {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// CTA pegajoso al fondo de la pantalla (el degradado tapa el contenido que pasa por debajo).
+.dock {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: auto;
+  margin-inline: calc(-1 * var(--rr-gutter));
+  padding: 20px var(--rr-gutter) calc(20px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(12, 12, 31, 0), rgba(12, 12, 31, 0.92) 30%);
+}
+
+.offline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--rr-red-light);
+
+  .icon {
+    font-size: 18px;
+  }
+}
+
+.spin {
+  animation: create-spin 0.9s linear infinite;
+}
+
+@keyframes create-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,9 @@
+<span class="tile" aria-hidden="true">
+  <span class="icon filled glyph">{{ option().icon }}</span>
+</span>
+@if (host()) {
+  <span class="badge" aria-hidden="true"><span class="icon filled">star</span></span>
+}
+@if (online() !== null) {
+  <span class="dot" [class.off]="!online()" aria-hidden="true"></span>
+}

@@ -1,0 +1,256 @@
+.join {
+  gap: 18px;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 4px;
+}
+
+.profile-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.done {
+  align-self: flex-end;
+  min-height: 36px;
+  font-size: 12px;
+}
+
+.change {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+.notice {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--rr-radius-md);
+  border: 1px solid rgba(0, 241, 254, 0.35);
+  background: rgba(0, 241, 254, 0.08);
+  color: var(--rr-cyan-light);
+
+  .icon {
+    font-size: 20px;
+  }
+
+  strong {
+    font-family: var(--rr-font-mono);
+    white-space: nowrap;
+  }
+
+  a {
+    margin-left: 4px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+}
+
+// ------------------------------------------------------------ Casillas del código
+
+.code-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 26px;
+  color: var(--rr-on-surface-variant);
+}
+
+.boxes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) 12px repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 6px;
+}
+
+.sep {
+  font-family: var(--rr-font-display);
+  font-size: 26px;
+  font-weight: 900;
+  text-align: center;
+  color: var(--rr-muted);
+}
+
+.box {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 58px;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, rgba(40, 40, 70, 0.55), rgba(8, 8, 26, 0.92) 55%);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.05);
+  font-family: var(--rr-font-display);
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  // Brillo superior (acabado glossy)
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 3px 6px auto;
+    height: 38%;
+    border-radius: 10px 10px 40% 40%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+    pointer-events: none;
+  }
+
+  &.filled {
+    border-color: rgba(255, 215, 0, 0.45);
+    color: var(--rr-yellow-light);
+    text-shadow: 0 0 12px rgba(255, 215, 0, 0.55);
+    animation: join-digit 0.28s var(--rr-ease-bounce);
+  }
+
+  &.active {
+    border-color: var(--rr-yellow);
+    box-shadow:
+      inset 0 2px 6px rgba(0, 0, 0, 0.45),
+      0 0 0 3px rgba(255, 215, 0, 0.16),
+      0 0 18px rgba(255, 215, 0, 0.35);
+
+    // Cursor parpadeante
+    &::after {
+      content: '';
+      width: 3px;
+      height: 28px;
+      border-radius: 2px;
+      background: var(--rr-yellow);
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+      animation: join-caret 1s steps(2, jump-none) infinite;
+    }
+  }
+
+  .complete & {
+    border-color: rgba(0, 241, 254, 0.75);
+    box-shadow:
+      inset 0 2px 6px rgba(0, 0, 0, 0.45),
+      0 0 14px rgba(0, 241, 254, 0.25);
+  }
+
+  .error & {
+    border-color: rgba(255, 90, 95, 0.8);
+    color: var(--rr-red-light);
+    text-shadow: 0 0 12px rgba(255, 90, 95, 0.5);
+    box-shadow:
+      inset 0 2px 6px rgba(0, 0, 0, 0.45),
+      0 0 14px rgba(255, 90, 95, 0.25);
+  }
+}
+
+@keyframes join-digit {
+  from {
+    transform: scale(0.82);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes join-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+// ------------------------------------------------------------ Teclado numérico
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.key {
+  display: grid;
+  place-items: center;
+  height: 58px;
+  padding: 0;
+  border-radius: var(--rr-radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, #2b2b4f 0%, #1a1a2e 100%);
+  box-shadow:
+    0 4px 0 0 #07071a,
+    0 8px 15px rgba(0, 0, 0, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.08);
+  font-family: var(--rr-font-display);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--rr-on-surface);
+  touch-action: manipulation;
+  user-select: none;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.08s ease;
+
+  &:active {
+    transform: translateY(3px);
+    box-shadow:
+      0 1px 0 0 #07071a,
+      0 4px 8px rgba(0, 0, 0, 0.35),
+      inset 0 2px 4px rgba(255, 255, 255, 0.08);
+  }
+
+  &.tool {
+    background: linear-gradient(180deg, #1e1e36 0%, #131327 100%);
+
+    .icon {
+      font-size: 26px;
+    }
+  }
+
+  &.paste {
+    color: var(--rr-cyan);
+  }
+
+  &.erase {
+    color: var(--rr-orange-light);
+  }
+}
+
+// ------------------------------------------------------------ CTA
+
+.cta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.cta-hint {
+  text-align: center;
+  color: var(--rr-on-surface-variant);
+}
+
+.spin {
+  animation: join-spin 0.9s linear infinite;
+}
+
+@keyframes join-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

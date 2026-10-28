@@ -1,12 +1,18 @@
 {
   "name": "rollyrun",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "scripts": {
     "ng": "ng",
+    "dev": "concurrently -k -n server,web -c yellow,cyan \"npm:server:dev\" \"npm:start\"",
     "start": "ng serve",
+    "server": "node server/src/index.ts",
+    "server:dev": "node --watch server/src/index.ts --port 3000",
+    "server:check": "tsc -p server/tsconfig.json",
     "build": "ng build",
+    "start:prod": "npm run build && npm run server",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test:server": "vitest run --dir server"
   },
   "prettier": {
     "printWidth": 100,
@@ -30,14 +36,21 @@
     "@angular/platform-browser": "^21.1.0",
     "@angular/router": "^21.1.0",
     "rxjs": "~7.8.0",
+    "socket.io": "^4.8.4",
+    "socket.io-client": "^4.8.4",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/build": "^21.1.0",
     "@angular/cli": "^21.1.0",
     "@angular/compiler-cli": "^21.1.0",
+    "@types/node": "^22.20.5",
+    "concurrently": "^9.2.5",
     "jsdom": "^27.1.0",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
+  },
+  "engines": {
+    "node": ">=22.18.0"
   }
 }

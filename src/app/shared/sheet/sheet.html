@@ -1,0 +1,35 @@
+@if (open()) {
+  <div class="layer" animate.leave="is-leaving">
+    <div class="backdrop" (click)="requestClose()"></div>
+    <section
+      #panel
+      class="panel"
+      role="dialog"
+      aria-modal="true"
+      tabindex="-1"
+      [attr.aria-labelledby]="title() ? titleId : null"
+      [attr.aria-label]="title() ? null : 'Diálogo'"
+      (keydown)="onKeydown($event)"
+    >
+      <span class="grabber" aria-hidden="true"></span>
+      <header class="head">
+        @if (icon(); as ic) {
+          <span class="head-icon" aria-hidden="true"
+            ><span class="icon filled">{{ ic }}</span></span
+          >
+        }
+        <h2 class="title-md head-title" [id]="titleId">{{ title() }}</h2>
+        <button
+          type="button"
+          class="icon-btn round close"
+          aria-label="Cerrar"
+          (click)="requestClose()"
+        >
+          <span class="icon" aria-hidden="true">close</span>
+        </button>
+      </header>
+      <div class="body scroll-thin"><ng-content /></div>
+      <footer class="actions"><ng-content select="[sheetActions]" /></footer>
+    </section>
+  </div>
+}

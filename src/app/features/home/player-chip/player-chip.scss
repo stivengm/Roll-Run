@@ -1,0 +1,33 @@
+:host {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px 10px 14px;
+  border-radius: var(--rr-radius-lg);
+  background: rgba(30, 30, 50, 0.8);
+  border: 1px solid var(--rr-border);
+  box-shadow: var(--rr-shadow-card);
+}
+
+.who {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+
+  .label-caps {
+    font-size: 10px;
+    color: var(--rr-on-surface-variant);
+  }
+}
+
+.name {
+  overflow: hidden;
+  font-family: var(--rr-font-display);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 24px;
+  color: var(--rr-on-surface);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

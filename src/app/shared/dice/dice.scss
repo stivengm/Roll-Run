@@ -1,0 +1,299 @@
+:host {
+  --dice: 132px;
+  --half: calc(var(--dice) / 2);
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  width: calc(var(--dice) * 1.7);
+  height: calc(var(--dice) * 1.72);
+}
+
+.dice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  height: 100%;
+  padding-bottom: calc(var(--dice) * 0.04);
+}
+
+.halo {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  width: calc(var(--dice) * 1.75);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  translate: -50% -50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 215, 0, 0.26) 0%,
+    rgba(255, 170, 0, 0.1) 42%,
+    transparent 68%
+  );
+  pointer-events: none;
+  transition: background 0.4s ease;
+}
+
+.stage {
+  position: relative;
+  width: var(--dice);
+  height: var(--dice);
+  transition: filter 0.3s ease;
+}
+
+.hop {
+  width: 100%;
+  height: 100%;
+  perspective: calc(var(--dice) * 5);
+}
+
+.tilt,
+.cube {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+// Inclinación fija: deja ver la cara frontal, la superior y la izquierda.
+.tilt {
+  transform: rotateX(-20deg) rotateY(26deg);
+}
+
+.cube {
+  transform: rotateY(180deg);
+  will-change: transform;
+
+  &.tumbling {
+    animation: tumble 0.9s linear infinite;
+  }
+}
+
+// Planos internos que rellenan los huecos de las esquinas redondeadas.
+.core {
+  position: absolute;
+  inset: calc(var(--dice) * 0.03);
+  border-radius: calc(var(--dice) * 0.08);
+  background: #c99a00;
+
+  &.core-x {
+    transform: rotateX(90deg);
+  }
+
+  &.core-y {
+    transform: rotateY(90deg);
+  }
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: calc(var(--dice) * 0.14);
+  border: max(2px, calc(var(--dice) * 0.015)) solid #e9c400;
+  background:
+    radial-gradient(circle at 28% 20%, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0) 40%),
+    linear-gradient(150deg, #fff1a6 0%, #ffe14a 28%, #ffd700 55%, #efb700 100%);
+  box-shadow:
+    inset 0 0 calc(var(--dice) * 0.14) rgba(255, 255, 255, 0.55),
+    inset 0 calc(var(--dice) * -0.05) calc(var(--dice) * 0.1) rgba(170, 110, 0, 0.35);
+  backface-visibility: hidden;
+  font-family: var(--rr-font-display);
+  font-size: calc(var(--dice) * 0.52);
+  font-weight: 900;
+  line-height: 1;
+  color: #4a3a00;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.45);
+
+  &[data-face='1'] {
+    transform: translateZ(var(--half));
+  }
+  &[data-face='6'] {
+    transform: rotateY(180deg) translateZ(var(--half));
+  }
+  &[data-face='3'] {
+    transform: rotateY(90deg) translateZ(var(--half));
+  }
+  &[data-face='4'] {
+    transform: rotateY(-90deg) translateZ(var(--half));
+  }
+  &[data-face='2'] {
+    transform: rotateX(90deg) translateZ(var(--half));
+  }
+  &[data-face='5'] {
+    transform: rotateX(-90deg) translateZ(var(--half));
+  }
+
+  &.penalty {
+    color: #d3121c;
+    box-shadow:
+      inset 0 0 0 calc(var(--dice) * 0.035) rgba(211, 18, 28, 0.28),
+      inset 0 0 calc(var(--dice) * 0.14) rgba(255, 255, 255, 0.5),
+      inset 0 calc(var(--dice) * -0.05) calc(var(--dice) * 0.1) rgba(170, 60, 0, 0.35);
+  }
+}
+
+.skull {
+  position: absolute;
+  top: 9%;
+  left: 9%;
+  font-size: calc(var(--dice) * 0.18);
+  color: #d3121c;
+  text-shadow: none;
+}
+
+.shadow {
+  flex-shrink: 0;
+  width: calc(var(--dice) * 1.1);
+  height: calc(var(--dice) * 0.2);
+  margin-top: calc(var(--dice) * 0.16);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.6) 0%,
+    rgba(0, 0, 0, 0.25) 45%,
+    transparent 72%
+  );
+}
+
+// ------------------------------------------------------------------ Lanzando
+
+.is-rolling {
+  .hop {
+    animation: hop-air 0.42s ease-in-out infinite alternate;
+  }
+
+  .shadow {
+    animation: shadow-air 0.42s ease-in-out infinite alternate;
+  }
+
+  .halo {
+    animation: rr-pulse 0.9s ease-in-out infinite;
+  }
+}
+
+.landing {
+  .hop {
+    animation: land 0.76s ease-out both;
+  }
+
+  .shadow {
+    animation: shadow-land 0.76s ease-out both;
+  }
+}
+
+// ------------------------------------------------------------------ Estados de ánimo
+
+.mood-penalty {
+  .halo {
+    background: radial-gradient(
+      circle,
+      rgba(255, 90, 95, 0.4) 0%,
+      rgba(255, 50, 50, 0.12) 42%,
+      transparent 68%
+    );
+  }
+
+  .stage {
+    filter: drop-shadow(0 0 calc(var(--dice) * 0.12) rgba(255, 70, 80, 0.75));
+    animation: rr-shake 0.45s ease-in-out 0.7s 2;
+  }
+}
+
+.mood-win {
+  .halo {
+    background: radial-gradient(
+      circle,
+      rgba(255, 215, 0, 0.5) 0%,
+      rgba(255, 170, 0, 0.18) 45%,
+      transparent 70%
+    );
+    animation: rr-pulse 1.6s ease-in-out infinite;
+  }
+
+  .stage {
+    animation: rr-glow-pulse 1.6s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-rolling .stage {
+    opacity: 0.55;
+  }
+}
+
+// ------------------------------------------------------------------ Keyframes
+
+// Ángulos de partida en --rx/--ry/--rz; un ciclo suma vueltas completas para enlazar sin saltos.
+@keyframes tumble {
+  from {
+    transform: rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz));
+  }
+  to {
+    transform: rotateX(calc(var(--rx) + 720deg)) rotateY(calc(var(--ry) + 1080deg))
+      rotateZ(calc(var(--rz) + 360deg));
+  }
+}
+
+@keyframes hop-air {
+  from {
+    transform: translateY(calc(var(--dice) * -0.12));
+  }
+  to {
+    transform: translateY(calc(var(--dice) * -0.24));
+  }
+}
+
+@keyframes shadow-air {
+  from {
+    transform: scale(0.78);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+}
+
+@keyframes land {
+  0% {
+    transform: translateY(calc(var(--dice) * -0.2));
+    animation-timing-function: ease-in;
+  }
+  44% {
+    transform: translateY(0) scale(1.06, 0.92);
+    animation-timing-function: ease-out;
+  }
+  62% {
+    transform: translateY(calc(var(--dice) * -0.06)) scale(0.98, 1.02);
+    animation-timing-function: ease-in;
+  }
+  80% {
+    transform: translateY(0) scale(1.02, 0.98);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes shadow-land {
+  0% {
+    transform: scale(0.62);
+    opacity: 0.45;
+  }
+  44% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  62% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
